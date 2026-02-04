@@ -224,3 +224,11 @@ Main packages:
 - bert-score (evaluation metric)
 
 See requirements.txt for full list.
+
+## Group 8 - Team Members
+
+- **SELVA PANDIAN S** – 2023AC05005@wilp.bits-pilani.ac.in
+- **Shikhar Nigam** – 2024AA05691@wilp.bits-pilani.ac.in
+- **Suraj Anand** – 2024aa05731@wilp.bits-pilani.ac.in
+- **NEERUMALLA KAVITHA** – 2024AA05879@wilp.bits-pilani.ac.in
+- **Karan Sharma** – 2024AB05145@wilp.bits-pilani.ac.in

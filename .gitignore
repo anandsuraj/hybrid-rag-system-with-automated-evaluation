@@ -1,9 +1,17 @@
-.cache/
-.huggingface/
+# Environment and secrets
 .env
+set_env.sh
 
-# Cache directories
+# Tooling and cache
+.cache/
+.npm-cache/*
+.huggingface/
 __pycache__/
+.ipynb_checkpoints/
+node_modules/
+.npx/
+
+# Python build artefacts
 *.pyc
 *.pyo
 *.pyd
@@ -13,17 +21,23 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+
+# OS and logs
 .DS_Store
+npm-debug.log*
+
+# Data files
 data/*.pkl
 data/*.bin
 data/*.json
-set_env.sh
+
+# Hugging Face artefacts
 HF_TOKEN*.png
+
+# Documentation outputs
+docs/*
+
+# Optional reports (uncomment if needed)
 # reports/*.html
 # reports/*.json
 # reports/*.csv
-.ipynb_checkpoints/
-node_modules/
-.npx/
-npm-debug.log*
-docs/*
