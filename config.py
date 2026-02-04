@@ -1,9 +1,11 @@
-# Configuration file for Hybrid RAG System
-# All system parameters and settings in one place
-
+# Configuration parameters for the RAG system
 import os
+from dotenv import load_dotenv
 
-# Base directories
+# Initialize environment
+load_dotenv()
+
+# Project directory structure
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 SRC_DIR = os.path.join(BASE_DIR, 'src')
@@ -11,21 +13,12 @@ EVAL_DIR = os.path.join(BASE_DIR, 'evaluation')
 REPORTS_DIR = os.path.join(BASE_DIR, 'reports')
 UI_DIR = os.path.join(BASE_DIR, 'ui')
 
-# HuggingFace and Threading Configuration
-# Purge potentially expired tokens that cause 401 errors
-for key in ['HF_TOKEN', 'HUGGINGFACE_HUB_TOKEN', 'HUGGING_FACE_HUB_TOKEN']:
-    if key in os.environ:
-        # Check if it's the known expired token or just generally purge for this submission
-        # This ensures we use public access for the assignment
-        print(f"DEBUG: Removing {key} from environment to avoid 401 Unauthorized errors.")
-        del os.environ[key]
-
-# macOS and Threading Safety (Critical for Stable Execution on Mac)
+# Threading and model configuration
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 os.environ['OMP_NUM_THREADS'] = '1'
 os.environ['TOKENIZERS_PARALLELISM'] = 'false'
 
-HF_TOKEN = None # Force None for this project
+HF_TOKEN = os.getenv('HF_TOKEN')
 CACHE_DIR = os.path.join(BASE_DIR, '.cache', 'huggingface')
 
 # Dataset configuration

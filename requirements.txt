@@ -35,3 +35,5 @@ reportlab>=4.0.0
 # Progress bars
 tqdm>=4.66.0
 
+# Environment variables
+python-dotenv>=1.0.0

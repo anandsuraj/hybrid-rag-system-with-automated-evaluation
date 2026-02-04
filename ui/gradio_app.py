@@ -3,11 +3,11 @@ import sys
 import time
 from typing import List, Tuple
 
-# Fix imports - add parent directory to path
+# Fix imports for local development
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import config
 
-# Set HuggingFace cache
+# Configuration for models and cache
 os.makedirs(config.CACHE_DIR, exist_ok=True)
 os.environ['HF_HOME'] = config.CACHE_DIR
 if config.HF_TOKEN:
@@ -17,12 +17,12 @@ import gradio as gr
 from src.hybrid_retrieval import HybridRetriever
 from src.llm_generation import ResponseGenerator
 
-# Global variables for models
+# Global instances
 retriever = None
 generator = None
 
 def initialize_models():
-    """Load models at startup"""
+    """Application startup initialization"""
     global retriever, generator
     
     print("Loading RAG system models for Gradio...")

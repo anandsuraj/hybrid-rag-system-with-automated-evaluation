@@ -1,5 +1,8 @@
-# Add venv to gitignore
-venv/
+.cache/
+.huggingface/
+.env
+
+# Cache directories
 __pycache__/
 *.pyc
 *.pyo
@@ -14,9 +17,6 @@ build/
 data/*.pkl
 data/*.bin
 data/*.json
-.cache/
-.npm-cache/*
-.npm-cache*
 set_env.sh
 HF_TOKEN*.png
 # reports/*.html
@@ -26,3 +26,4 @@ HF_TOKEN*.png
 node_modules/
 .npx/
 npm-debug.log*
+docs/*
