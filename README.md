@@ -140,6 +140,9 @@ This generates 100 test questions, runs them through the system, and creates an 
 ├── docs/                        # Documentation
 │   └── system_dataflow.png      # Architecture diagram
 │
+├── scripts/                     # Helper scripts
+│   └── generate_fixed_urls.py   # Generates JSON with 200 high-quality URLs
+│
 ├── Dockerfile                   # Docker container setup
 └── docker-compose.yml           # Docker Compose configuration
 ```
