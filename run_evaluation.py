@@ -174,7 +174,7 @@ def main():
         metrics = results['overall_metrics']
         print("\nKey Metrics:")
         print(f"  MRR (URL-level): {metrics['avg_mrr']:.3f}")
-        print(f"  NDCG@5: {metrics['avg_ndcg_at_k']:.3f}")
+        print(f"  NDCG@3: {metrics['avg_ndcg_at_k']:.3f}")
         print(f"  ROUGE-L F1: {metrics['avg_rouge_l_f1']:.3f}")
         print(f"  Total questions: {metrics['total_questions']}")
         

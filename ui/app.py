@@ -6,7 +6,6 @@ import sys
 import time
 from typing import Dict, List
 
-# Fix imports - add parent directory to path FIRST
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import config
 

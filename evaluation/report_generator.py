@@ -34,7 +34,7 @@ class ReportGenerator:
         
         # 1. Overall metrics bar chart
         metrics_data = results['overall_metrics']
-        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 12))
+        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(12, 10))
         
         # MRR, NDCG, ROUGE-L
         metrics_names = ['MRR', f'NDCG@{config.NDCG_K}', 'ROUGE-L F1']
@@ -99,6 +99,64 @@ class ReportGenerator:
         plt.close()
         
         visualizations['metrics_overview'] = metrics_viz_path
+        
+        # 2. Ablation Study Chart
+        if 'ablation_study' in results:
+            ablation = results['ablation_study']
+            methods = ['Dense-only', 'Sparse-only', 'Hybrid (RRF)']
+            
+            # Get accuracies
+            dense_acc = ablation.get('dense_only', {}).get('accuracy', 0)
+            sparse_acc = ablation.get('sparse_only', {}).get('accuracy', 0)
+            hybrid_acc = ablation.get('hybrid', {}).get('accuracy', 0)
+            
+            accuracies = [dense_acc, sparse_acc, hybrid_acc]
+            
+            plt.figure(figsize=(8, 5))
+            bars = plt.bar(methods, accuracies, color=['#3498db', '#9b59b6', '#2ecc71'])
+            plt.ylabel('Accuracy')
+            plt.title('Ablation Study: Retrieval Method Comparison', fontweight='bold')
+            plt.ylim(0, 1.1)
+            
+            for bar in bars:
+                height = bar.get_height()
+                plt.text(bar.get_x() + bar.get_width()/2., height + 0.01,
+                        f'{height:.1%}', ha='center', va='bottom', fontweight='bold')
+                        
+            ablation_viz_path = os.path.join(output_dir, 'ablation_study.png')
+            plt.savefig(ablation_viz_path, dpi=300, bbox_inches='tight')
+            plt.close()
+            visualizations['ablation_study'] = ablation_viz_path
+
+        # 3. Error Analysis Chart (Stacked)
+        if 'error_analysis' in results and 'by_type' in results['error_analysis']:
+            err_data = results['error_analysis']['by_type']
+            q_types = list(err_data.keys())
+            
+            retrieval_fails = []
+            gen_fails = []
+            
+            for q in q_types:
+                stats = err_data[q]
+                retrieval_fails.append(stats.get('retrieval_failure_rate', 0))
+                gen_fails.append(stats.get('generation_failure_rate', 0))
+                
+            x = range(len(q_types))
+            plt.figure(figsize=(8, 5))
+            
+            p1 = plt.bar(x, retrieval_fails, color='#e74c3c', label='Retrieval Failures')
+            p2 = plt.bar(x, gen_fails, bottom=retrieval_fails, color='#f39c12', label='Generation Failures')
+            
+            plt.ylabel('Failure Rate')
+            plt.title('Error Analysis by Question Type (Retrieval vs Generation)', fontweight='bold')
+            plt.xticks(x, [q.replace('_', ' ').title() for q in q_types])
+            plt.legend()
+            plt.ylim(0, 1.1)
+            
+            err_viz_path = os.path.join(output_dir, 'error_analysis.png')
+            plt.savefig(err_viz_path, dpi=300, bbox_inches='tight')
+            plt.close()
+            visualizations['error_analysis'] = err_viz_path
         
         return visualizations
     
@@ -184,9 +242,10 @@ class ReportGenerator:
                     border-radius: 5px;
                 }}
                 img {{
-                    max-width: 100%;
+                    max-width: 800px;
+                    display: block;
                     height: auto;
-                    margin: 20px 0;
+                    margin: 20px auto;
                     border-radius: 10px;
                     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
                 }}
@@ -335,20 +394,24 @@ class ReportGenerator:
                 analysis_items = error_data
                 
             html += '<img src="error_analysis.png" alt="Error Analysis">'
-            html += '<table><tr><th>Question Type</th><th>Failure Rate</th><th>Failed/Total</th></tr>'
+            html += '<table><tr><th>Question Type</th><th>Retrieval Failures</th><th>Generation Failures</th><th>Total Questions</th></tr>'
             
             for q_type, analysis in analysis_items.items():
-                failure_rate = analysis.get('failure_rate', 0)
-                failed = analysis.get('failed', 0)
-                total = analysis.get('total', 0)
-                
-                html += f"""
-                <tr>
-                    <td>{q_type.capitalize()}</td>
-                    <td>{failure_rate:.1%}</td>
-                    <td>{failed}/{total}</td>
-                </tr>
-                """
+                if isinstance(analysis, dict):
+                    # New format with split tracking
+                    retrieval_fail = analysis.get('retrieval_failed', 0)
+                    generation_fail = analysis.get('generation_failed', 0)
+                    total = analysis.get('total', 0)
+                    
+                    if total > 0:
+                        r_rate = retrieval_fail / total
+                        g_rate = generation_fail / total
+                        html += f'<tr><td>{q_type.replace("_", " ").title()}</td><td>{r_rate:.1%} ({retrieval_fail}/{total})</td><td>{g_rate:.1%} ({generation_fail}/{total})</td><td>{total}</td></tr>'
+                    else:
+                        html += f'<tr><td>{q_type.replace("_", " ").title()}</td><td>0.0% (0/0)</td><td>0.0% (0/0)</td><td>0</td></tr>'
+                else:
+                    # Fallback for old format
+                    html += f'<tr><td>{q_type.replace("_", " ").title()}</td><td>Unknown</td><td>Unknown</td><td>Unknown</td></tr>'
             
             html += '</table>'
         

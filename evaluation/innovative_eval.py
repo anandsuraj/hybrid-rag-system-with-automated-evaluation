@@ -110,15 +110,14 @@ def analyze_errors(results: Dict) -> Dict:
     
     error_analysis = {
         'by_type': {
-            'factual': {'total': 0, 'failed': 0},
-            'comparative': {'total': 0, 'failed': 0},
-            'inferential': {'total': 0, 'failed': 0},
-            'multi_hop': {'total': 0, 'failed': 0}
+            'factual': {'total': 0, 'retrieval_failed': 0, 'generation_failed': 0},
+            'comparative': {'total': 0, 'retrieval_failed': 0, 'generation_failed': 0},
+            'inferential': {'total': 0, 'retrieval_failed': 0, 'generation_failed': 0},
+            'multi_hop': {'total': 0, 'retrieval_failed': 0, 'generation_failed': 0}
         },
         'failure_modes': {
             'retrieval_failure': 0,
-            'generation_failure': 0,
-            'both_failure': 0
+            'generation_failure': 0
         }
     }
     
@@ -131,34 +130,29 @@ def analyze_errors(results: Dict) -> Dict:
                 error_analysis['by_type'][q_type]['total'] += 1
                 
                 # Check if retrieval failed (MRR = 0)
-                retrieval_failed = q_result.get('mrr', 0) == 0
+                if q_result.get('mrr', 0) == 0:
+                    error_analysis['by_type'][q_type]['retrieval_failed'] += 1
+                    error_analysis['failure_modes']['retrieval_failure'] += 1
                 
                 # Check if generation failed (ROUGE-L F1 < 0.2)
-                generation_failed = q_result.get('rouge_l_f1', 0) < 0.2
-                
-                if retrieval_failed and generation_failed:
-                    error_analysis['by_type'][q_type]['failed'] += 1
-                    error_analysis['failure_modes']['both_failure'] += 1
-                elif retrieval_failed:
-                    error_analysis['by_type'][q_type]['failed'] += 1
-                    error_analysis['failure_modes']['retrieval_failure'] += 1
-                elif generation_failed:
-                    error_analysis['by_type'][q_type]['failed'] += 1
+                if q_result.get('rouge_l_f1', 0) < 0.2:
+                    error_analysis['by_type'][q_type]['generation_failed'] += 1
                     error_analysis['failure_modes']['generation_failure'] += 1
     
     # Calculate failure rates
     for q_type in error_analysis['by_type']:
         total = error_analysis['by_type'][q_type]['total']
         if total > 0:
-            failed = error_analysis['by_type'][q_type]['failed']
-            error_analysis['by_type'][q_type]['failure_rate'] = failed / total
+            error_analysis['by_type'][q_type]['retrieval_failure_rate'] = error_analysis['by_type'][q_type]['retrieval_failed'] / total
+            error_analysis['by_type'][q_type]['generation_failure_rate'] = error_analysis['by_type'][q_type]['generation_failed'] / total
         else:
-            error_analysis['by_type'][q_type]['failure_rate'] = 0.0
+            error_analysis['by_type'][q_type]['retrieval_failure_rate'] = 0.0
+            error_analysis['by_type'][q_type]['generation_failure_rate'] = 0.0
     
     print("  Error rates by question type:")
     for q_type, stats in error_analysis['by_type'].items():
         if stats['total'] > 0:
-            print(f"    {q_type}: {stats['failure_rate']:.1%} ({stats['failed']}/{stats['total']})")
+            print(f"    {q_type}: Retrieval Fail {stats['retrieval_failure_rate']:.1%} | Generation Fail {stats['generation_failure_rate']:.1%}")
     
     return error_analysis
 

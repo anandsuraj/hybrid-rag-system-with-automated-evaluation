@@ -178,7 +178,7 @@ Combines results from both methods using the formula:
 RRF_score(d) = Σ 1/(k + rank_i(d))
 ```
 
-Where k=60 (as specified in assignment). This method ensures documents appearing in both result sets get higher scores.
+Where k=60. This method ensures documents appearing in both result sets get higher scores.
 
 ---
 

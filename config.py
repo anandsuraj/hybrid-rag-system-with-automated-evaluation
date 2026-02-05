@@ -45,7 +45,7 @@ EMBEDDING_MODEL = 'sentence-transformers/all-MiniLM-L6-v2'
 EMBEDDING_DIM = 384
 LLM_MODEL = 'google/flan-t5-base'
 MAX_GEN_LENGTH = 256
-TEMPERATURE = 0.7
+TEMPERATURE = 0.1
 
 # Retrieval settings
 DENSE_TOP_K = 10

@@ -51,9 +51,9 @@ class ResponseGenerator:
         context_parts = []
         
         for i, (chunk, score) in enumerate(chunks, 1):
-            # Include title and text
+            # Include title and text with clearer source separation
             context_parts.append(
-                f"[{i}] {chunk['title']}\n{chunk['text']}"
+                f"Document {i} (Source: {chunk['title']}):\n{chunk['text']}"
             )
         
         return "\n\n".join(context_parts)
@@ -124,14 +124,15 @@ class ResponseGenerator:
         Returns:
             Formatted prompt
         """
-        prompt = f"""Answer the following question using the provided context. If the context contains relevant information, use it to form a comprehensive answer. If the answer is not explicitly stated but can be inferred, please do so.
+        prompt = f"""You are a helpful assistant. Answer the question precisely based ONLY on the provided context documents. 
+If the information is not present in the context, state that the information is not available.
 
-Context:
+Context Documents:
 {context}
 
 Question: {query}
 
-Answer:"""
+Please provide a clear and concise answer:"""
         
         return prompt
 

@@ -76,9 +76,10 @@
                     border-radius: 5px;
                 }
                 img {
-                    max-width: 100%;
+                    max-width: 800px;
+                    display: block;
                     height: auto;
-                    margin: 20px 0;
+                    margin: 20px auto;
                     border-radius: 10px;
                     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
                 }
@@ -86,7 +87,7 @@
         </head>
         <body>
             <h1> Hybrid RAG System - Evaluation Report</h1>
-            <p><strong>Generated:</strong> 2026-02-05 15:21:45</p>
+            <p><strong>Generated:</strong> 2026-02-05 16:37:58</p>
             <p><strong>Total Questions Evaluated:</strong> 100</p>
             
             <h2>System Architecture</h2>
@@ -107,7 +108,7 @@
                 </div>
                 <div class="metric" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                     <span class="metric-label">ROUGE-L F1</span>
-                    <span class="metric-value">0.0126</span>
+                    <span class="metric-value">0.0515</span>
                 </div>
             </div>
             
@@ -151,17 +152,17 @@
                 </ul>
                 <p><strong>Our Scores:</strong></p>
                 <ul>
-                    <li>Precision: 0.1286</li>
-                    <li>Recall: 0.0070</li>
-                    <li>F1: 0.0126</li>
+                    <li>Precision: 0.3034</li>
+                    <li>Recall: 0.0300</li>
+                    <li>F1: 0.0515</li>
                 </ul>
             </div>
             
             <h2> Performance Metrics</h2>
             <div class="metric-box">
-                <p><strong>Average Retrieval Time:</strong> 0.06 seconds</p>
-                <p><strong>Average Generation Time:</strong> 2.07 seconds</p>
-                <p><strong>Average Total Time:</strong> 2.13 seconds</p>
+                <p><strong>Average Retrieval Time:</strong> 0.07 seconds</p>
+                <p><strong>Average Generation Time:</strong> 2.56 seconds</p>
+                <p><strong>Average Total Time:</strong> 2.63 seconds</p>
             </div>
             
             <h2> Performance by Question Type</h2>
@@ -179,7 +180,7 @@
                     <td>30</td>
                     <td>0.9611</td>
                     <td>0.9490</td>
-                    <td>0.0147</td>
+                    <td>0.0579</td>
                 </tr>
             
                 <tr>
@@ -187,7 +188,7 @@
                     <td>20</td>
                     <td>0.9250</td>
                     <td>0.9226</td>
-                    <td>0.0075</td>
+                    <td>0.0533</td>
                 </tr>
             
                 <tr>
@@ -195,7 +196,7 @@
                     <td>30</td>
                     <td>0.9833</td>
                     <td>0.9818</td>
-                    <td>0.0121</td>
+                    <td>0.0527</td>
                 </tr>
             
                 <tr>
@@ -203,7 +204,7 @@
                     <td>20</td>
                     <td>1.0000</td>
                     <td>0.9920</td>
-                    <td>0.0155</td>
+                    <td>0.0381</td>
                 </tr>
             
             </table>
@@ -211,39 +212,15 @@
             <h2>Ablation Study Results</h2>
         
             <div class="metric-box">
-                <p><strong>Dense-only Accuracy:</strong> 0.9500</p>
+                <p><strong>Dense-only Accuracy:</strong> 1.0000</p>
                 <p><strong>Sparse-only (BM25) Accuracy:</strong> 0.9000</p>
-                <p><strong>Hybrid (RRF) Accuracy:</strong> 0.9500</p>
+                <p><strong>Hybrid (RRF) Accuracy:</strong> 1.0000</p>
                 <p><em>The hybrid approach combining dense and sparse retrieval with RRF shows stronger performance compared to individual methods, validating the architectural choice.</em></p>
             </div>
             <img src="ablation_study.png" alt="Ablation Study">
             
             <h2>Error Analysis</h2>
-        <img src="error_analysis.png" alt="Error Analysis"><table><tr><th>Question Type</th><th>Failure Rate</th><th>Failed/Total</th></tr>
-                <tr>
-                    <td>Factual</td>
-                    <td>100.0%</td>
-                    <td>30/30</td>
-                </tr>
-                
-                <tr>
-                    <td>Comparative</td>
-                    <td>100.0%</td>
-                    <td>20/20</td>
-                </tr>
-                
-                <tr>
-                    <td>Inferential</td>
-                    <td>100.0%</td>
-                    <td>30/30</td>
-                </tr>
-                
-                <tr>
-                    <td>Multi_hop</td>
-                    <td>100.0%</td>
-                    <td>20/20</td>
-                </tr>
-                </table>
+        <img src="error_analysis.png" alt="Error Analysis"><table><tr><th>Question Type</th><th>Retrieval Failures</th><th>Generation Failures</th><th>Total Questions</th></tr><tr><td>Factual</td><td>0.0% (0/30)</td><td>96.7% (29/30)</td><td>30</td></tr><tr><td>Comparative</td><td>5.0% (1/20)</td><td>95.0% (19/20)</td><td>20</td></tr><tr><td>Inferential</td><td>0.0% (0/30)</td><td>96.7% (29/30)</td><td>30</td></tr><tr><td>Multi Hop</td><td>0.0% (0/20)</td><td>100.0% (20/20)</td><td>20</td></tr></table>
             <h2>Visualizations</h2>
             <img src="metrics_overview.png" alt="Metrics Overview">
             
