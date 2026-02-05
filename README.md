@@ -57,6 +57,18 @@ Create a `.env` file for HuggingFace token (speeds up model downloads):
 echo "HF_TOKEN=your_huggingface_token" > .env
 ```
 
+#### How to get your Hugging Face (HF) Token:
+
+1. **Log in or Sign up**: Go to [huggingface.co](https://huggingface.co/) and log in to your account.
+2. **Go to Settings**: Click on your profile picture in the top right corner and select **Settings**.
+3. **Access Tokens**: In the left sidebar, click on **Access Tokens**.
+4. **Create New Token**:
+    - Click the **"Create new token"** button.
+    - Give it a name (e.g., "RAG Project").
+    - Select the role (usually **"Read"** is sufficient for downloading models, but use **"Write"** if you plan to upload/fine-tune models).
+    - Click **"Create token"**.
+5. **Copy**: Copy the generated token starting with `hf_` and paste it into your `.env` file.
+
 ### Step 4: Run the Pipeline
 
 **Option A: Automated Setup (Recommended)**
