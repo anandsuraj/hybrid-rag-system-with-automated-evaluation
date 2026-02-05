@@ -175,6 +175,9 @@ class EvaluationMetrics:
         # Extract ground truth URLs (handle both single and multiple)
         if isinstance(question_data['source_url'], list):
             ground_truth_urls = question_data['source_url']
+        elif ',' in question_data['source_url']:
+            # Handle comma-separated URLs (for comparative questions)
+            ground_truth_urls = [url.strip() for url in question_data['source_url'].split(',')]
         else:
             ground_truth_urls = [question_data['source_url']]
         

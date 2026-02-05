@@ -71,7 +71,7 @@ QUESTION_TYPES = {
 }
 
 # Metrics configuration
-NDCG_K = 5
+NDCG_K = 3
 MRR_CUTOFF = 10
 
 # UI settings
