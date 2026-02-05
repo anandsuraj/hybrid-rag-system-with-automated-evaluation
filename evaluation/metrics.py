@@ -1,12 +1,12 @@
 """
 Evaluation Metrics for RAG System
-Implements MRR (mandatory), NDCG@K, and BERTScore (custom metrics)
+Implements MRR (mandatory), NDCG@K, and ROUGE-L (custom metrics)
 """
 
 import numpy as np
 from typing import List, Dict, Tuple
 from sklearn.metrics import ndcg_score
-from bert_score import score as bert_score
+from rouge_score import rouge_scorer
 import sys
 import os
 
@@ -19,7 +19,7 @@ class EvaluationMetrics:
     
     def __init__(self):
         """Initialize metrics calculator."""
-        pass
+        self.rouge = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
     
     def calculate_mrr_url(
         self,
@@ -73,7 +73,7 @@ class EvaluationMetrics:
             the entire ranking, making it ideal for assessing retrieval quality.
         
         Calculation:
-            DCG@K = Σ(i=1 to K) (2^rel_i - 1) / log2(i + 1)
+            DCG@K = sum((2^rel_i - 1) / log2(i + 1)) for i = 1 to K
             IDCG@K = DCG for perfect ranking
             NDCG@K = DCG@K / IDCG@K
         
@@ -102,9 +102,8 @@ class EvaluationMetrics:
             return 0.0
         
         # Calculate NDCG using sklearn
-        # Reshape for sklearn format
         y_true = np.array([relevance_scores])
-        y_score = np.array([list(range(k, 0, -1))])  # Higher scores for higher ranks
+        y_score = np.array([list(range(k, 0, -1))])
         
         try:
             ndcg = ndcg_score(y_true, y_score)
@@ -112,34 +111,32 @@ class EvaluationMetrics:
         except:
             return 0.0
     
-    def calculate_bertscore(
+    def calculate_rouge_l(
         self,
         reference_answer: str,
         generated_answer: str
     ) -> Dict[str, float]:
         """
-        Calculate BERTScore for answer semantic similarity.
+        Calculate ROUGE-L for answer similarity.
         This is CUSTOM METRIC #2.
         
         Justification:
-            BERTScore measures semantic similarity beyond exact word matching.
-            Unlike BLEU or ROUGE which rely on n-gram overlap, BERTScore uses
-            contextual embeddings to capture meaning, making it ideal for
-            evaluating generated answers that may use different words but
-            convey the same meaning.
+            ROUGE-L measures longest common subsequence between texts, capturing
+            sentence-level structure similarity. Unlike exact match metrics, it
+            allows for word order variations while still measuring content overlap.
+            It's widely used in summarization and QA evaluation.
         
         Calculation:
-            - Compute BERT embeddings for reference and generated answer tokens
-            - Calculate token-level cosine similarity
-            - Apply greedy matching to find best alignment
-            - Compute precision, recall, and F1
+            LCS = Longest Common Subsequence
+            Precision = LCS / len(generated)
+            Recall = LCS / len(reference)
+            F1 = 2 * P * R / (P + R)
         
         Interpretation:
-            >0.9 = excellent semantic match (nearly identical meaning)
-            0.8-0.9 = good match (similar meaning, different wording)
-            0.7-0.8 = fair match (related but some divergence)
-            0.6-0.7 = weak match (loosely related)
-            <0.6 = poor match (different meaning)
+            >0.5 = good overlap (significant content match)
+            0.3-0.5 = moderate overlap (related content)
+            0.1-0.3 = weak overlap (loosely related)
+            <0.1 = poor overlap (different content)
         
         Args:
             reference_answer: Ground truth answer
@@ -148,18 +145,14 @@ class EvaluationMetrics:
         Returns:
             Dictionary with precision, recall, and F1 scores
         """
-        # Calculate BERTScore
-        P, R, F1 = bert_score(
-            [generated_answer],
-            [reference_answer],
-            lang='en',
-            verbose=False
-        )
+        scores = self.rouge.score(reference_answer, generated_answer)
         
         return {
-            'precision': float(P[0]),
-            'recall': float(R[0]),
-            'f1': float(F1[0])
+            'precision': scores['rougeL'].precision,
+            'recall': scores['rougeL'].recall,
+            'f1': scores['rougeL'].fmeasure,
+            'rouge1_f1': scores['rouge1'].fmeasure,
+            'rouge2_f1': scores['rouge2'].fmeasure
         }
     
     def evaluate_single_question(
@@ -191,8 +184,8 @@ class EvaluationMetrics:
         # Calculate NDCG@K (custom metric 1)
         ndcg = self.calculate_ndcg_at_k(ground_truth_urls, retrieved_chunks)
         
-        # Calculate BERTScore (custom metric 2)
-        bert_scores = self.calculate_bertscore(
+        # Calculate ROUGE-L (custom metric 2)
+        rouge_scores = self.calculate_rouge_l(
             question_data['answer'],
             generated_answer
         )
@@ -200,9 +193,11 @@ class EvaluationMetrics:
         return {
             'mrr': mrr,
             'ndcg_at_k': ndcg,
-            'bertscore_precision': bert_scores['precision'],
-            'bertscore_recall': bert_scores['recall'],
-            'bertscore_f1': bert_scores['f1']
+            'rouge_l_precision': rouge_scores['precision'],
+            'rouge_l_recall': rouge_scores['recall'],
+            'rouge_l_f1': rouge_scores['f1'],
+            'rouge1_f1': rouge_scores['rouge1_f1'],
+            'rouge2_f1': rouge_scores['rouge2_f1']
         }
 
 
@@ -227,8 +222,8 @@ if __name__ == "__main__":
     ndcg = metrics.calculate_ndcg_at_k(ground_truth_urls, retrieved_chunks, k=3)
     print(f"NDCG@3: {ndcg:.4f}")
     
-    # Test BERTScore
+    # Test ROUGE-L
     reference = "Machine learning is a subset of artificial intelligence."
     generated = "ML is part of AI and focuses on learning from data."
-    bert_scores = metrics.calculate_bertscore(reference, generated)
-    print(f"BERTScore F1: {bert_scores['f1']:.4f}")
+    rouge_scores = metrics.calculate_rouge_l(reference, generated)
+    print(f"ROUGE-L F1: {rouge_scores['f1']:.4f}")

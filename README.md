@@ -1,234 +1,297 @@
-# Hybrid RAG System
+# Hybrid RAG System with Automated Evaluation
 
-A question answering system that retrieves relevant Wikipedia articles and generates answers using a language model.
+A Retrieval-Augmented Generation (RAG) system that combines dense vector retrieval, sparse keyword retrieval (BM25), and Reciprocal Rank Fusion (RRF) to answer questions from 500 Wikipedia articles. The system includes an automated evaluation framework with 100 generated questions.
 
-## System Architecture
+## Group 8
 
-![System Data Flow](docs/system_dataflow.png)
+| Name | Email |
+|------|-------|
+| SELVA PANDIAN S | 2023AC05005@wilp.bits-pilani.ac.in |
+| Shikhar Nigam | 2024AA05691@wilp.bits-pilani.ac.in |
+| Suraj Anand | 2024aa05731@wilp.bits-pilani.ac.in |
+| NEERUMALLA KAVITHA | 2024AA05879@wilp.bits-pilani.ac.in |
+| Karan Sharma | 2024AB05145@wilp.bits-pilani.ac.in |
 
-The system works in 5 stages:
-1. **Data Collection** - Scrapes 500 Wikipedia articles (200 fixed + 300 random)
-2. **Preprocessing** - Splits articles into smaller chunks (200-400 words each)
-3. **Indexing** - Creates two search indices (FAISS for semantic search, BM25 for keyword search)
-4. **Retrieval** - Combines both search methods using Reciprocal Rank Fusion (RRF)
-5. **Generation** - Uses Flan-T5 model to generate answers from retrieved chunks
+---
 
-### Library Choices & Rationale
+## System Overview
 
-| Component | Library/Tool | Why we chose it |
-|-----------|--------------|-----------------|
-| **Vector Database** | `faiss-cpu` | Lightweight and efficient for local execution. Unlike client-server DBs (Chroma/Pinecone), FAISS runs directly in-process, making it ideal for a self-contained assignment submission without external dependencies. |
-| **Embeddings** | `all-MiniLM-L6-v2` | Best-in-class speed/performance trade-off for CPU inference. Generates 384-dimensional vectors significantly faster than larger models while maintaining high semantic accuracy. |
-| **Sparse Retrieval** | `rank_bm25` | Validated implementation of the BM25 algorithm. Provides a robust, stateless keyword search baseline without the overhead of setting up ElasticSearch or Solr. |
-| **LLM** | `Flan-T5-base` | A true instruction-tuned open-source model. Selected because it provides decent reasoning capabilities on consumer hardware (CPU-friendly) without requiring paid API keys (like OpenAI). |
-| **Web Framework** | `Flask` | Minimalist and production-ready. Allows us to serve the RAG pipeline via REST endpoints with minimal boilerplate code. |
-| **Metrics** | `bert-score` | Uses contextual embeddings to evaluate answer quality, which is more robust than n-gram overlapping metrics (BLEU/ROUGE) for open-ended QA. |
+The system implements a complete RAG pipeline with the following components:
 
-## Quick Start
+1. **Data Collection** - Collects 500 Wikipedia articles (200 fixed + 300 random)
+2. **Preprocessing** - Chunks text into 200-400 token segments with 50-token overlap
+3. **Dense Retrieval** - FAISS vector search using `all-MiniLM-L6-v2` embeddings
+4. **Sparse Retrieval** - BM25 keyword-based search
+5. **Hybrid Fusion** - Reciprocal Rank Fusion combining both methods
+6. **Answer Generation** - Flan-T5-base model for response generation
+7. **Evaluation** - Automated evaluation with MRR, NDCG@K, and BERTScore metrics
 
-### Option 1: Run Everything (Recommended)
+---
+
+## Setup Instructions
+
+### Prerequisites
+
+- Python 3.10 or higher
+- 8GB RAM minimum
+- Internet connection for Wikipedia data collection
+
+### Step 1: Create Virtual Environment
+
+```bash
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+### Step 2: Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Step 3: Configure Environment (Optional)
+
+Create a `.env` file for HuggingFace token (speeds up model downloads):
+
+```bash
+echo "HF_TOKEN=your_huggingface_token" > .env
+```
+
+### Step 4: Run the Pipeline
+
+**Option A: Automated Setup (Recommended)**
 
 ```bash
 ./run.sh
 ```
 
-This script handles the full setup automatically.
+This script handles everything: data collection, preprocessing, indexing, and launches the UI.
 
-### Option 2: Step by Step
+**Option B: Manual Step-by-Step**
 
 ```bash
-# 1. Create virtual environment
-python3 -m venv venv
-source venv/bin/activate
-
-# 2. Install packages
-pip install -r requirements.txt
-
-# 3. Collect Wikipedia data (takes 15-20 min)
+# 1. Collect Wikipedia data (takes 15-20 minutes)
 python src/data_collection.py
 
-# 4. Process text into chunks
+# 2. Preprocess and chunk the text
 python src/preprocessing.py
 
-# 5. Build search indices
+# 3. Build retrieval indices (FAISS + BM25)
 python src/hybrid_retrieval.py
 
-# 6. Start the web app
-cd ui && python app.py
+# 4. Launch the UI (choose one)
+python ui/app.py           # Flask interface on http://localhost:5000
+python ui/gradio_app.py    # Gradio interface on http://localhost:5001
 ```
 
-Open http://localhost:5000 in your browser.
-
-## Project Structure
-
-```
-├── src/                     # Main code
-│   ├── data_collection.py   # Downloads Wikipedia articles
-│   ├── preprocessing.py     # Splits text into chunks
-│   ├── embeddings.py        # Creates vector embeddings (FAISS)
-│   ├── sparse_retrieval.py  # Keyword search (BM25)
-│   ├── hybrid_retrieval.py  # Combines both search methods
-│   └── llm_generation.py    # Generates answers
-│
-├── evaluation/              # Testing and metrics
-│   ├── question_generation.py  # Creates test questions
-│   ├── metrics.py              # MRR, NDCG, BERTScore calculations
-│   ├── pipeline.py             # Runs the evaluation
-│   └── report_generator.py     # Creates HTML report
-│
-├── ui/                      # Web interface
-│   ├── app.py               # Flask server
-│   └── templates/           # HTML pages
-│
-├── data/                    # Generated files (not in git)
-│   ├── corpus.pkl           # Downloaded articles
-│   ├── chunks.json          # Processed text chunks
-│   ├── faiss_index.bin      # Vector search index
-│   └── bm25_index.pkl       # Keyword search index
-│
-├── reports/                 # Evaluation outputs
-│   └── evaluation_report.html
-│
-├── config.py                # Settings
-├── run.sh                   # Setup script
-├── run_evaluation.py        # Run tests
-└── requirements.txt         # Python packages
-```
-
-## Running the Evaluation
+### Step 5: Run Evaluation
 
 ```bash
 python run_evaluation.py
 ```
 
-This will:
-- Generate 100 test questions from the corpus
-- Run each question through the system
-- Calculate retrieval and generation metrics
-- Create an HTML report with charts
+This generates 100 test questions, runs them through the system, and creates an evaluation report at `reports/evaluation_report.html`.
 
-View results at `reports/evaluation_report.html`
+---
 
-## Metrics
+## Project Structure
 
-**Retrieval Metrics:**
-- MRR (Mean Reciprocal Rank) - How high is the correct answer ranked?
-- NDCG@5 - Considers position of relevant results
-- Precision/Recall/F1 - Standard retrieval metrics
-
-**Generation Metrics:**
-- BERTScore - Semantic similarity between generated and expected answer
-- ROUGE-L - Word overlap with expected answer
-- BLEU - N-gram overlap score
-
-## How It Works
-
-### Hybrid Retrieval
-
-We use two search methods together:
-
-1. **Dense Retrieval (FAISS)** - Converts text to vectors using sentence-transformers, finds similar vectors
-2. **Sparse Retrieval (BM25)** - Traditional keyword matching with TF-IDF weights
-
-Results from both are merged using RRF (Reciprocal Rank Fusion):
 ```
-RRF_score = 1/(k + rank_dense) + 1/(k + rank_sparse)
+├── config.py                    # Central configuration file
+├── requirements.txt             # Python dependencies
+├── run.sh                       # Automated setup script
+├── run_evaluation.py            # Main evaluation runner
+│
+├── src/                         # Core RAG implementation
+│   ├── data_collection.py       # Wikipedia scraping (200 fixed + 300 random URLs)
+│   ├── preprocessing.py         # Text chunking with overlap
+│   ├── embeddings.py            # Dense retrieval with FAISS
+│   ├── sparse_retrieval.py      # Sparse retrieval with BM25
+│   ├── hybrid_retrieval.py      # RRF fusion of dense + sparse
+│   └── llm_generation.py        # Answer generation with Flan-T5
+│
+├── evaluation/                  # Automated evaluation framework
+│   ├── question_generation.py   # Generates 100 Q&A pairs from corpus
+│   ├── metrics.py               # MRR, NDCG@K, BERTScore implementation
+│   ├── pipeline.py              # Evaluation orchestration
+│   ├── innovative_eval.py       # Ablation studies and error analysis
+│   ├── report_generator.py      # HTML report generation
+│   └── questions_dataset.json   # Generated evaluation questions
+│
+├── ui/                          # User interfaces
+│   ├── app.py                   # Flask web interface
+│   ├── gradio_app.py            # Gradio chat interface
+│   ├── templates/               # HTML templates for Flask
+│   └── static/                  # CSS and JS assets
+│
+├── data/                        # Data files (generated)
+│   ├── fixed_urls.json          # 200 fixed Wikipedia URLs
+│   ├── corpus.pkl               # Downloaded articles
+│   ├── chunks.json              # Preprocessed text chunks
+│   ├── faiss_index.bin          # Vector search index
+│   ├── faiss_index_metadata.pkl # Index metadata
+│   └── bm25_index.pkl           # BM25 keyword index
+│
+├── reports/                     # Evaluation outputs
+│   ├── evaluation_report.html   # Main HTML report with visualizations
+│   ├── results.json             # Raw evaluation results
+│   └── results.csv              # Results in CSV format
+│
+├── docs/                        # Documentation
+│   └── system_dataflow.png      # Architecture diagram
+│
+├── Dockerfile                   # Docker container setup
+└── docker-compose.yml           # Docker Compose configuration
 ```
 
-This gives better results than either method alone.
+---
 
+## Dataset
 
-### Dataset Strategy
+The system uses a hybrid dataset strategy:
 
-To ensure both **reproducibility** (for consistent grading) and **robustness** (against unseen data), the system uses a unique hybrid dataset approach:
-- **200 Fixed URLs**: A curated list of diverse topics stored in `data/fixed_urls.json`. These provide a stable baseline for development and debugging.
-- **300 Random URLs**: Fetched freshly from Wikipedia's random API on each pipeline run. This forces the system to handle new domains and prevents overfitting to a static corpus.
+- **Fixed URLs (200)**: Curated list stored in `data/fixed_urls.json` for reproducibility
+- **Random URLs (300)**: Freshly sampled from Wikipedia API on each run for robustness
 
-**Total Corpus:** 500 Wikipedia Articles (~4M tokens).
+**Total Corpus**: 500 Wikipedia articles with minimum 200 words per article.
 
-### Answer Generation
+---
 
-The top 5 retrieved chunks are passed to Flan-T5-base along with the question. The model generates a natural language answer based on the context.
+## Hybrid Retrieval
 
-## Configuration
+### Dense Retrieval
+- Uses `sentence-transformers/all-MiniLM-L6-v2` for embeddings (384 dimensions)
+- FAISS index for fast similarity search
+- Returns top-K chunks by cosine similarity
 
-Edit `config.py` to change:
+### Sparse Retrieval
+- BM25 algorithm for keyword-based ranking
+- Handles exact term matching and TF-IDF weighting
 
-```python
-# Dataset
-FIXED_URL_COUNT = 200      # Wikipedia articles from fixed list
-RANDOM_URL_COUNT = 300     # Additional random articles
+### Reciprocal Rank Fusion (RRF)
+Combines results from both methods using the formula:
 
-# Chunking
-CHUNK_SIZE = 300           # Words per chunk
-CHUNK_OVERLAP = 50         # Overlap between chunks
-
-# Retrieval
-DENSE_TOP_K = 10           # Candidates from FAISS
-SPARSE_TOP_K = 10          # Candidates from BM25
-RRF_K = 60                 # RRF smoothing factor
-
-# Evaluation
-QUESTIONS_COUNT = 100      # Test questions to generate
 ```
+RRF_score(d) = Σ 1/(k + rank_i(d))
+```
+
+Where k=60 (as specified in assignment). This method ensures documents appearing in both result sets get higher scores.
+
+---
+
+## Answer Generation
+
+The system uses `google/flan-t5-base` for answer generation:
+- Top 5 chunks from RRF are concatenated as context
+- Model generates natural language answers based on retrieved context
+- Maximum generation length: 256 tokens
+
+---
+
+## Evaluation Metrics
+
+### Mandatory Metric
+
+| Metric | Description |
+|--------|-------------|
+| **MRR (Mean Reciprocal Rank)** | Measures how quickly the system finds the correct source URL. Calculated at URL level, not chunk level. |
+
+### Custom Metrics
+
+| Metric | Justification | Interpretation |
+|--------|---------------|----------------|
+| **NDCG@5** | Evaluates ranking quality by considering position of all relevant documents, not just the first. | 1.0 = perfect ranking, 0.7+ = good, <0.5 = poor |
+| **BERTScore** | Measures semantic similarity using contextual embeddings, capturing meaning beyond exact word overlap. | >0.9 = excellent, 0.8-0.9 = good, <0.7 = weak |
+
+---
+
+## User Interface
+
+### Flask Interface (`ui/app.py`)
+
+```bash
+python ui/app.py
+```
+
+Access at `http://localhost:5000`. Features:
+- Query input with real-time search
+- Display of generated answer with sources
+- Shows dense/sparse/RRF scores for transparency
+- Response time tracking
+
+### Gradio Interface (`ui/gradio_app.py`)
+
+```bash
+python ui/gradio_app.py
+```
+
+Access at `http://localhost:5001`. Features:
+- Chat-style interface
+- Shareable public link option
+- Example questions for quick testing
+
+---
 
 ## Docker
 
-```bash
-# Build and run
-docker-compose up --build
+Build and run using Docker Compose:
 
-# Stop
+```bash
+docker-compose up --build
+```
+
+Access the Flask UI at `http://localhost:5000`.
+
+To stop:
+
+```bash
 docker-compose down
 ```
 
+---
+
+## Configuration
+
+All parameters are centralized in `config.py`:
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `FIXED_URLS_COUNT` | 200 | Number of fixed Wikipedia URLs |
+| `RANDOM_URLS_COUNT` | 300 | Number of random URLs per run |
+| `MIN_CHUNK_TOKENS` | 200 | Minimum tokens per chunk |
+| `MAX_CHUNK_TOKENS` | 400 | Maximum tokens per chunk |
+| `CHUNK_OVERLAP_TOKENS` | 50 | Token overlap between chunks |
+| `DENSE_TOP_K` | 10 | Candidates from dense retrieval |
+| `SPARSE_TOP_K` | 10 | Candidates from sparse retrieval |
+| `RRF_K` | 60 | RRF smoothing constant |
+| `FINAL_TOP_N` | 5 | Final chunks passed to LLM |
+| `QUESTIONS_COUNT` | 100 | Number of evaluation questions |
+
+---
+
 ## Troubleshooting
 
-**"corpus.pkl not found"**
-```bash
-python src/data_collection.py
-```
+| Error | Solution |
+|-------|----------|
+| `corpus.pkl not found` | Run `python src/data_collection.py` |
+| `chunks.json not found` | Run `python src/preprocessing.py` |
+| `faiss_index.bin not found` | Run `python src/hybrid_retrieval.py` |
+| Out of memory | Reduce `DENSE_TOP_K` and `SPARSE_TOP_K` in config.py |
+| Slow data collection | Normal behavior due to Wikipedia rate limits (~15-20 min) |
 
-**"chunks.json not found"**
-```bash
-python src/preprocessing.py
-```
-
-**"faiss_index.bin not found"**
-```bash
-python src/hybrid_retrieval.py
-```
-
-**Out of memory**
-- Reduce `DENSE_TOP_K` and `SPARSE_TOP_K` in config.py
-- Close other applications
-
-**Slow data collection**
-- Normal, Wikipedia has rate limits
-- Takes 15-20 minutes for 500 articles
-
-## Requirements
-
-- Python 3.10+
-- 8GB RAM (for embeddings)
-- Internet connection (for data collection)
+---
 
 ## Dependencies
 
-Main packages:
-- sentence-transformers (embeddings)
-- faiss-cpu (vector search)
-- rank-bm25 (keyword search)
-- transformers (Flan-T5 model)
-- flask (web interface)
-- bert-score (evaluation metric)
+Core libraries used:
 
-See requirements.txt for full list.
+- `sentence-transformers` - Text embeddings
+- `faiss-cpu` - Vector similarity search
+- `rank-bm25` - BM25 algorithm
+- `transformers` - Flan-T5 model
+- `flask` / `gradio` - Web interfaces
+- `bert-score` - Answer evaluation
+- `beautifulsoup4` - Wikipedia scraping
+- `tiktoken` - Token counting
 
-## Group 8 - Team Members
-
-- **SELVA PANDIAN S** – 2023AC05005@wilp.bits-pilani.ac.in
-- **Shikhar Nigam** – 2024AA05691@wilp.bits-pilani.ac.in
-- **Suraj Anand** – 2024aa05731@wilp.bits-pilani.ac.in
-- **NEERUMALLA KAVITHA** – 2024AA05879@wilp.bits-pilani.ac.in
-- **Karan Sharma** – 2024AB05145@wilp.bits-pilani.ac.in
+See `requirements.txt` for complete list.

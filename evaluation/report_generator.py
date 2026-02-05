@@ -36,12 +36,12 @@ class ReportGenerator:
         metrics_data = results['overall_metrics']
         fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 12))
         
-        # MRR, NDCG, BERTScore
-        metrics_names = ['MRR', f'NDCG@{config.NDCG_K}', 'BERTScore F1']
+        # MRR, NDCG, ROUGE-L
+        metrics_names = ['MRR', f'NDCG@{config.NDCG_K}', 'ROUGE-L F1']
         metrics_values = [
             metrics_data['avg_mrr'],
             metrics_data['avg_ndcg_at_k'],
-            metrics_data['avg_bertscore_f1']
+            metrics_data['avg_rouge_l_f1']
         ]
         ax1.bar(metrics_names, metrics_values, color=['#3498db', '#e74c3c', '#2ecc71'])
         ax1.set_ylabel('Score')
@@ -63,13 +63,13 @@ class ReportGenerator:
         for i, v in enumerate(time_values):
             ax2.text(i, v + 0.02, f'{v:.2f}s', ha='center', fontweight='bold')
         
-        # MRR distribution - handle both key names for compatibility
+        # MRR distribution
         detailed_key = 'detailed_results' if 'detailed_results' in results else 'per_question_results'
         mrr_scores = []
         if detailed_key in results:
             mrr_scores = [r.get('mrr', 0) for r in results[detailed_key]]
         else:
-            mrr_scores = [metrics_data['avg_mrr']] * 10  # fallback with average
+            mrr_scores = [metrics_data['avg_mrr']] * 10
         
         ax3.hist(mrr_scores, bins=20, color='#3498db', edgecolor='black', alpha=0.7)
         ax3.set_xlabel('MRR Score')
@@ -214,8 +214,8 @@ class ReportGenerator:
                     <span class="metric-value">{metrics['avg_ndcg_at_k']:.4f}</span>
                 </div>
                 <div class="metric" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                    <span class="metric-label">BERTScore F1</span>
-                    <span class="metric-value">{metrics['avg_bertscore_f1']:.4f}</span>
+                    <span class="metric-label">ROUGE-L F1</span>
+                    <span class="metric-value">{metrics['avg_rouge_l_f1']:.4f}</span>
                 </div>
             </div>
             
@@ -226,7 +226,7 @@ class ReportGenerator:
                 <p><strong>Why Chosen:</strong> NDCG measures ranking quality by considering both relevance and position. Unlike MRR which only considers the first relevant result, NDCG evaluates the entire ranking, making it ideal for assessing overall retrieval quality.</p>
                 <p><strong>Calculation Method:</strong></p>
                 <ul>
-                    <li>DCG@K = Σ(i=1 to K) (2^rel_i - 1) / log2(i + 1)</li>
+                    <li>DCG@K = sum((2^rel_i - 1) / log2(i + 1)) for i = 1 to K</li>
                     <li>IDCG@K = DCG for perfect ranking</li>
                     <li>NDCG@K = DCG@K / IDCG@K</li>
                 </ul>
@@ -241,28 +241,27 @@ class ReportGenerator:
             </div>
             
             <div class="justification">
-                <h3>Metric 2: BERTScore (Semantic Similarity)</h3>
-                <p><strong>Why Chosen:</strong> BERTScore measures semantic similarity beyond exact word matching. Unlike BLEU or ROUGE which rely on n-gram overlap, BERTScore uses contextual embeddings to capture meaning, making it ideal for evaluating generated answers that may use different words but convey the same meaning.</p>
+                <h3>Metric 2: ROUGE-L (Longest Common Subsequence)</h3>
+                <p><strong>Why Chosen:</strong> ROUGE-L measures the longest common subsequence between the reference and generated answers, capturing sentence-level structure similarity. It allows for word order variations while still measuring content overlap, making it ideal for evaluating open-ended QA where exact wording may differ.</p>
                 <p><strong>Calculation Method:</strong></p>
                 <ul>
-                    <li>Compute BERT embeddings for reference and generated answer tokens</li>
-                    <li>Calculate token-level cosine similarity</li>
-                    <li>Apply greedy matching to find best alignment</li>
-                    <li>Compute precision, recall, and F1</li>
+                    <li>LCS = Longest Common Subsequence between reference and generated answer</li>
+                    <li>Precision = LCS / len(generated)</li>
+                    <li>Recall = LCS / len(reference)</li>
+                    <li>F1 = 2 * P * R / (P + R)</li>
                 </ul>
                 <p><strong>Interpretation:</strong></p>
                 <ul>
-                    <li>&gt;0.9 = excellent semantic match (nearly identical meaning)</li>
-                    <li>0.8-0.9 = good match (similar meaning, different wording)</li>
-                    <li>0.7-0.8 = fair match (related but some divergence)</li>
-                    <li>0.6-0.7 = weak match (loosely related)</li>
-                    <li>&lt;0.6 = poor match (different meaning)</li>
+                    <li>&gt;0.5 = good overlap (significant content match)</li>
+                    <li>0.3-0.5 = moderate overlap (related content)</li>
+                    <li>0.1-0.3 = weak overlap (loosely related)</li>
+                    <li>&lt;0.1 = poor overlap (different content)</li>
                 </ul>
                 <p><strong>Our Scores:</strong></p>
-<ul>
-                    <li>Precision: {metrics['avg_bertscore_precision']:.4f}</li>
-                    <li>Recall: {metrics['avg_bertscore_recall']:.4f}</li>
-                    <li>F1: {metrics['avg_bertscore_f1']:.4f}</li>
+                <ul>
+                    <li>Precision: {metrics['avg_rouge_l_precision']:.4f}</li>
+                    <li>Recall: {metrics['avg_rouge_l_recall']:.4f}</li>
+                    <li>F1: {metrics['avg_rouge_l_f1']:.4f}</li>
                 </ul>
             </div>
             
@@ -280,7 +279,7 @@ class ReportGenerator:
                     <th>Count</th>
                     <th>Avg MRR</th>
                     <th>Avg NDCG@K</th>
-                    <th>Avg BERTScore F1</th>
+                    <th>Avg ROUGE-L F1</th>
                 </tr>
         """
         
@@ -291,7 +290,7 @@ class ReportGenerator:
                     <td>{type_metrics['count']}</td>
                     <td>{type_metrics['avg_mrr']:.4f}</td>
                     <td>{type_metrics['avg_ndcg_at_k']:.4f}</td>
-                    <td>{type_metrics['avg_bertscore_f1']:.4f}</td>
+                    <td>{type_metrics['avg_rouge_l_f1']:.4f}</td>
                 </tr>
             """
         
@@ -303,7 +302,6 @@ class ReportGenerator:
         
         if 'ablation_study' in results:
             ablation = results['ablation_study']
-            # Handle both old and new ablation result formats
             dense_mrr = ablation.get('dense_only_avg_mrr', ablation.get('dense_only', {}).get('accuracy', 0))
             sparse_mrr = ablation.get('sparse_only_avg_mrr', ablation.get('sparse_only', {}).get('accuracy', 0))
             hybrid_mrr = ablation.get('hybrid_rrf_avg_mrr', ablation.get('hybrid', {}).get('accuracy', 0))
@@ -331,7 +329,6 @@ class ReportGenerator:
         
         if 'error_analysis' in results:
             error_data = results['error_analysis']
-            # Handle both direct and nested formats
             if 'by_type' in error_data:
                 analysis_items = error_data['by_type']
             else:
@@ -366,8 +363,8 @@ class ReportGenerator:
                 <p><strong>Key Performance Indicators:</strong></p>
                 <ul>
                     <li><strong>Retrieval Quality:</strong> The system maintains a high Mean Reciprocal Rank (MRR), indicating that correct source documents are consistently ranked near the top.</li>
-                    <li><strong>Semantic Accuracy:</strong> High BERTScore values confirm that generated answers are semantically aligned with ground truth, even when phrasing differs.</li>
-                    <li><strong>Latency:</strong> Average response times are within acceptable limits for real-time interaction, though multi-hop reasoning questions naturally incur slightly higher processing costs.</li>
+                    <li><strong>Answer Quality:</strong> ROUGE-L scores confirm that generated answers share significant content overlap with ground truth answers.</li>
+                    <li><strong>Latency:</strong> Average response times are within acceptable limits for real-time interaction.</li>
                 </ul>
 
                 <p><strong>Future Improvements:</strong></p>
@@ -385,6 +382,7 @@ class ReportGenerator:
         
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write(html)
+    
     def generate_reports(self, results_path: str):
         """Generate all reports from results file."""
         import shutil

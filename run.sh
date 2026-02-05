@@ -1,5 +1,5 @@
 #!/bin/bash
-# Master script to run the complete Hybrid RAG System pipeline
+# Complete Hybrid RAG System pipeline Script
 # Deletes existing data and collects fresh data every run
 
 set -e  # Exit on error
@@ -105,4 +105,3 @@ esac
 
 echo ""
 echo "Done!"
-

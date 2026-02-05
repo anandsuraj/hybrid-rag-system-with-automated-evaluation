@@ -115,9 +115,11 @@ class EvaluationPipeline:
             'total_questions': len(results),
             'avg_mrr': sum(r['mrr'] for r in results) / len(results),
             'avg_ndcg_at_k': sum(r['ndcg_at_k'] for r in results) / len(results),
-            'avg_bertscore_f1': sum(r['bertscore_f1'] for r in results) / len(results),
-            'avg_bertscore_precision': sum(r['bertscore_precision'] for r in results) / len(results),
-            'avg_bertscore_recall': sum(r['bertscore_recall'] for r in results) / len(results),
+            'avg_rouge_l_f1': sum(r['rouge_l_f1'] for r in results) / len(results),
+            'avg_rouge_l_precision': sum(r['rouge_l_precision'] for r in results) / len(results),
+            'avg_rouge_l_recall': sum(r['rouge_l_recall'] for r in results) / len(results),
+            'avg_rouge1_f1': sum(r['rouge1_f1'] for r in results) / len(results),
+            'avg_rouge2_f1': sum(r['rouge2_f1'] for r in results) / len(results),
             'avg_retrieval_time': sum(r['retrieval_time'] for r in results) / len(results),
             'avg_generation_time': sum(r['generation_time'] for r in results) / len(results),
             'avg_total_time': sum(r['total_time'] for r in results) / len(results)
@@ -137,7 +139,7 @@ class EvaluationPipeline:
                 'count': len(type_results),
                 'avg_mrr': sum(r['mrr'] for r in type_results) / len(type_results),
                 'avg_ndcg_at_k': sum(r['ndcg_at_k'] for r in type_results) / len(type_results),
-                'avg_bertscore_f1': sum(r['bertscore_f1'] for r in type_results) / len(type_results)
+                'avg_rouge_l_f1': sum(r['rouge_l_f1'] for r in type_results) / len(type_results)
             }
         
         metrics['by_question_type'] = type_metrics
@@ -193,10 +195,12 @@ class EvaluationPipeline:
         print(f"\nRetrieval Metrics:")
         print(f"  Average MRR (URL-level): {overall_metrics['avg_mrr']:.4f}")
         print(f"  Average NDCG@{config.NDCG_K}: {overall_metrics['avg_ndcg_at_k']:.4f}")
-        print(f"\nAnswer Quality Metrics (BERTScore):")
-        print(f"  F1: {overall_metrics['avg_bertscore_f1']:.4f}")
-        print(f"  Precision: {overall_metrics['avg_bertscore_precision']:.4f}")
-        print(f"  Recall: {overall_metrics['avg_bertscore_recall']:.4f}")
+        print(f"\nAnswer Quality Metrics (ROUGE):")
+        print(f"  ROUGE-L F1: {overall_metrics['avg_rouge_l_f1']:.4f}")
+        print(f"  ROUGE-L Precision: {overall_metrics['avg_rouge_l_precision']:.4f}")
+        print(f"  ROUGE-L Recall: {overall_metrics['avg_rouge_l_recall']:.4f}")
+        print(f"  ROUGE-1 F1: {overall_metrics['avg_rouge1_f1']:.4f}")
+        print(f"  ROUGE-2 F1: {overall_metrics['avg_rouge2_f1']:.4f}")
         print(f"\nPerformance:")
         print(f"  Avg Retrieval Time: {overall_metrics['avg_retrieval_time']:.2f}s")
         print(f"  Avg Generation Time: {overall_metrics['avg_generation_time']:.2f}s")
@@ -205,7 +209,7 @@ class EvaluationPipeline:
         print(f"\nBy Question Type:")
         for q_type, metrics in overall_metrics['by_question_type'].items():
             print(f"  {q_type.capitalize()} ({metrics['count']} questions):")
-            print(f"    MRR: {metrics['avg_mrr']:.4f}, NDCG@K: {metrics['avg_ndcg_at_k']:.4f}, BERTScore F1: {metrics['avg_bertscore_f1']:.4f}")
+            print(f"    MRR: {metrics['avg_mrr']:.4f}, NDCG@K: {metrics['avg_ndcg_at_k']:.4f}, ROUGE-L F1: {metrics['avg_rouge_l_f1']:.4f}")
         
         # Save results
         print("\n4. Saving results...")

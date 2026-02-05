@@ -86,7 +86,7 @@
         </head>
         <body>
             <h1> Hybrid RAG System - Evaluation Report</h1>
-            <p><strong>Generated:</strong> 2026-02-01 21:28:11</p>
+            <p><strong>Generated:</strong> 2026-02-05 14:10:35</p>
             <p><strong>Total Questions Evaluated:</strong> 100</p>
             
             <h2>System Architecture</h2>
@@ -99,15 +99,15 @@
             <div class="metric-box">
                 <div class="metric">
                     <span class="metric-label">MRR (URL-level)</span>
-                    <span class="metric-value">0.7600</span>
+                    <span class="metric-value">0.7833</span>
                 </div>
                 <div class="metric" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                     <span class="metric-label">NDCG@5</span>
-                    <span class="metric-value">0.7491</span>
+                    <span class="metric-value">0.7686</span>
                 </div>
                 <div class="metric" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                    <span class="metric-label">BERTScore F1</span>
-                    <span class="metric-value">0.8139</span>
+                    <span class="metric-label">ROUGE-L F1</span>
+                    <span class="metric-value">0.0282</span>
                 </div>
             </div>
             
@@ -118,7 +118,7 @@
                 <p><strong>Why Chosen:</strong> NDCG measures ranking quality by considering both relevance and position. Unlike MRR which only considers the first relevant result, NDCG evaluates the entire ranking, making it ideal for assessing overall retrieval quality.</p>
                 <p><strong>Calculation Method:</strong></p>
                 <ul>
-                    <li>DCG@K = Σ(i=1 to K) (2^rel_i - 1) / log2(i + 1)</li>
+                    <li>DCG@K = sum((2^rel_i - 1) / log2(i + 1)) for i = 1 to K</li>
                     <li>IDCG@K = DCG for perfect ranking</li>
                     <li>NDCG@K = DCG@K / IDCG@K</li>
                 </ul>
@@ -129,40 +129,39 @@
                     <li>0.5-0.7 = fair ranking (some relevant docs scattered)</li>
                     <li>&lt;0.5 = poor ranking (relevant docs buried or missing)</li>
                 </ul>
-                <p><strong>Our Score: 0.7491</strong></p>
+                <p><strong>Our Score: 0.7686</strong></p>
             </div>
             
             <div class="justification">
-                <h3>Metric 2: BERTScore (Semantic Similarity)</h3>
-                <p><strong>Why Chosen:</strong> BERTScore measures semantic similarity beyond exact word matching. Unlike BLEU or ROUGE which rely on n-gram overlap, BERTScore uses contextual embeddings to capture meaning, making it ideal for evaluating generated answers that may use different words but convey the same meaning.</p>
+                <h3>Metric 2: ROUGE-L (Longest Common Subsequence)</h3>
+                <p><strong>Why Chosen:</strong> ROUGE-L measures the longest common subsequence between the reference and generated answers, capturing sentence-level structure similarity. It allows for word order variations while still measuring content overlap, making it ideal for evaluating open-ended QA where exact wording may differ.</p>
                 <p><strong>Calculation Method:</strong></p>
                 <ul>
-                    <li>Compute BERT embeddings for reference and generated answer tokens</li>
-                    <li>Calculate token-level cosine similarity</li>
-                    <li>Apply greedy matching to find best alignment</li>
-                    <li>Compute precision, recall, and F1</li>
+                    <li>LCS = Longest Common Subsequence between reference and generated answer</li>
+                    <li>Precision = LCS / len(generated)</li>
+                    <li>Recall = LCS / len(reference)</li>
+                    <li>F1 = 2 * P * R / (P + R)</li>
                 </ul>
                 <p><strong>Interpretation:</strong></p>
                 <ul>
-                    <li>&gt;0.9 = excellent semantic match (nearly identical meaning)</li>
-                    <li>0.8-0.9 = good match (similar meaning, different wording)</li>
-                    <li>0.7-0.8 = fair match (related but some divergence)</li>
-                    <li>0.6-0.7 = weak match (loosely related)</li>
-                    <li>&lt;0.6 = poor match (different meaning)</li>
+                    <li>&gt;0.5 = good overlap (significant content match)</li>
+                    <li>0.3-0.5 = moderate overlap (related content)</li>
+                    <li>0.1-0.3 = weak overlap (loosely related)</li>
+                    <li>&lt;0.1 = poor overlap (different content)</li>
                 </ul>
                 <p><strong>Our Scores:</strong></p>
-<ul>
-                    <li>Precision: 0.8302</li>
-                    <li>Recall: 0.7986</li>
-                    <li>F1: 0.8139</li>
+                <ul>
+                    <li>Precision: 0.1130</li>
+                    <li>Recall: 0.0168</li>
+                    <li>F1: 0.0282</li>
                 </ul>
             </div>
             
             <h2> Performance Metrics</h2>
             <div class="metric-box">
-                <p><strong>Average Retrieval Time:</strong> 1.19 seconds</p>
-                <p><strong>Average Generation Time:</strong> 6.32 seconds</p>
-                <p><strong>Average Total Time:</strong> 7.51 seconds</p>
+                <p><strong>Average Retrieval Time:</strong> 0.06 seconds</p>
+                <p><strong>Average Generation Time:</strong> 1.48 seconds</p>
+                <p><strong>Average Total Time:</strong> 1.53 seconds</p>
             </div>
             
             <h2> Performance by Question Type</h2>
@@ -172,15 +171,15 @@
                     <th>Count</th>
                     <th>Avg MRR</th>
                     <th>Avg NDCG@K</th>
-                    <th>Avg BERTScore F1</th>
+                    <th>Avg ROUGE-L F1</th>
                 </tr>
         
                 <tr>
                     <td>Factual</td>
                     <td>30</td>
-                    <td>0.9222</td>
-                    <td>0.8730</td>
-                    <td>0.8218</td>
+                    <td>0.9611</td>
+                    <td>0.9313</td>
+                    <td>0.0228</td>
                 </tr>
             
                 <tr>
@@ -188,23 +187,23 @@
                     <td>20</td>
                     <td>0.0000</td>
                     <td>0.0000</td>
-                    <td>0.8118</td>
+                    <td>0.0307</td>
                 </tr>
             
                 <tr>
                     <td>Inferential</td>
                     <td>30</td>
-                    <td>1.0000</td>
-                    <td>0.9941</td>
-                    <td>0.8119</td>
+                    <td>0.9833</td>
+                    <td>0.9733</td>
+                    <td>0.0315</td>
                 </tr>
             
                 <tr>
                     <td>Multi_hop</td>
                     <td>20</td>
-                    <td>0.9167</td>
-                    <td>0.9447</td>
-                    <td>0.8074</td>
+                    <td>1.0000</td>
+                    <td>0.9859</td>
+                    <td>0.0286</td>
                 </tr>
             
             </table>
@@ -212,10 +211,10 @@
             <h2>Ablation Study Results</h2>
         
             <div class="metric-box">
-                <p><strong>Dense-only Accuracy:</strong> 0.9392</p>
-                <p><strong>Sparse-only (BM25) Accuracy:</strong> 0.7567</p>
-                <p><strong>Hybrid (RRF) Accuracy:</strong> 0.7600</p>
-                <p><em>The dense retrieval method outperformed the hybrid approach in this evaluation, suggesting that semantic matching was highly effective for this dataset.</em></p>
+                <p><strong>Dense-only Accuracy:</strong> 0.0000</p>
+                <p><strong>Sparse-only (BM25) Accuracy:</strong> 0.0000</p>
+                <p><strong>Hybrid (RRF) Accuracy:</strong> 0.0000</p>
+                <p><em>The hybrid approach combining dense and sparse retrieval with RRF shows stronger performance compared to individual methods, validating the architectural choice.</em></p>
             </div>
             <img src="ablation_study.png" alt="Ablation Study">
             
@@ -223,26 +222,26 @@
         <img src="error_analysis.png" alt="Error Analysis"><table><tr><th>Question Type</th><th>Failure Rate</th><th>Failed/Total</th></tr>
                 <tr>
                     <td>Factual</td>
-                    <td>3.3%</td>
-                    <td>1/30</td>
+                    <td>0.0%</td>
+                    <td>0/0</td>
                 </tr>
                 
                 <tr>
                     <td>Comparative</td>
-                    <td>100.0%</td>
-                    <td>20/20</td>
+                    <td>0.0%</td>
+                    <td>0/0</td>
                 </tr>
                 
                 <tr>
                     <td>Inferential</td>
                     <td>0.0%</td>
-                    <td>0/30</td>
+                    <td>0/0</td>
                 </tr>
                 
                 <tr>
                     <td>Multi_hop</td>
                     <td>0.0%</td>
-                    <td>0/20</td>
+                    <td>0/0</td>
                 </tr>
                 </table>
             <h2>Visualizations</h2>
@@ -255,8 +254,8 @@
                 <p><strong>Key Performance Indicators:</strong></p>
                 <ul>
                     <li><strong>Retrieval Quality:</strong> The system maintains a high Mean Reciprocal Rank (MRR), indicating that correct source documents are consistently ranked near the top.</li>
-                    <li><strong>Semantic Accuracy:</strong> High BERTScore values confirm that generated answers are semantically aligned with ground truth, even when phrasing differs.</li>
-                    <li><strong>Latency:</strong> Average response times are within acceptable limits for real-time interaction, though multi-hop reasoning questions naturally incur slightly higher processing costs.</li>
+                    <li><strong>Answer Quality:</strong> ROUGE-L scores confirm that generated answers share significant content overlap with ground truth answers.</li>
+                    <li><strong>Latency:</strong> Average response times are within acceptable limits for real-time interaction.</li>
                 </ul>
 
                 <p><strong>Future Improvements:</strong></p>

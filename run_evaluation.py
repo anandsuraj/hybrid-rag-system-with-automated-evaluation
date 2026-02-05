@@ -173,9 +173,9 @@ def main():
         # Print key metrics
         metrics = results['overall_metrics']
         print("\nKey Metrics:")
-        print(f"  MRR (URL-level): {metrics['mrr_url']:.3f}")
-        print(f"  NDCG@5: {metrics['ndcg_at_5']:.3f}")
-        print(f"  BERTScore F1: {metrics['bertscore_f1']:.3f}")
+        print(f"  MRR (URL-level): {metrics['avg_mrr']:.3f}")
+        print(f"  NDCG@5: {metrics['avg_ndcg_at_k']:.3f}")
+        print(f"  ROUGE-L F1: {metrics['avg_rouge_l_f1']:.3f}")
         print(f"  Total questions: {metrics['total_questions']}")
         
     except FileNotFoundError as e:

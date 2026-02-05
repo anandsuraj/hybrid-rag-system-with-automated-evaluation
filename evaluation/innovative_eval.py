@@ -134,8 +134,8 @@ def analyze_errors(results: Dict) -> Dict:
                 # Check if retrieval failed (MRR = 0)
                 retrieval_failed = q_result.get('mrr_url', 0) == 0
                 
-                # Check if generation failed (BERTScore < 0.5)
-                generation_failed = q_result.get('bertscore_f1', 0) < 0.5
+                # Check if generation failed (ROUGE-L F1 < 0.2)
+                generation_failed = q_result.get('rouge_l_f1', 0) < 0.2
                 
                 if retrieval_failed and generation_failed:
                     error_analysis['by_type'][q_type]['failed'] += 1
