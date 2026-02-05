@@ -51,7 +51,7 @@ TEMPERATURE = 0.7
 DENSE_TOP_K = 10
 SPARSE_TOP_K = 10
 RRF_K = 60  # From assignment formula: RRF_score(d) = sum(1/(k + rank_i(d)))
-FINAL_TOP_N = 5
+FINAL_TOP_N = 3
 
 # Evaluation settings
 NUM_QUESTIONS = 100

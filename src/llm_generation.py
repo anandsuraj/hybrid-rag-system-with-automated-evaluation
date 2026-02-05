@@ -87,7 +87,7 @@ class ResponseGenerator:
         inputs = self.tokenizer(
             prompt,
             return_tensors="pt",
-            max_length=512,
+            max_length=1024,
             truncation=True
         ).to(self.device)
         
@@ -124,7 +124,7 @@ class ResponseGenerator:
         Returns:
             Formatted prompt
         """
-        prompt = f"""Answer the following question based on the provided context. If the context doesn't contain enough information to answer the question, say "I don't have enough information to answer this question."
+        prompt = f"""Answer the following question using the provided context. If the context contains relevant information, use it to form a comprehensive answer. If the answer is not explicitly stated but can be inferred, please do so.
 
 Context:
 {context}
