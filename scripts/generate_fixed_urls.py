@@ -192,7 +192,16 @@ fixed_urls = [
     "https://en.wikipedia.org/wiki/Monetary_policy",
     "https://en.wikipedia.org/wiki/Fiscal_policy",
     "https://en.wikipedia.org/wiki/International_trade",
-    "https://en.wikipedia.org/wiki/Globalization"
+    "https://en.wikipedia.org/wiki/Globalization",
+    "https://en.wikipedia.org/wiki/World_War_II",
+    "https://en.wikipedia.org/wiki/Democracy",
+    "https://en.wikipedia.org/wiki/United_Nations",
+    "https://en.wikipedia.org/wiki/Olympic_Games",
+    "https://en.wikipedia.org/wiki/Association_football",
+    "https://en.wikipedia.org/wiki/Television",
+    "https://en.wikipedia.org/wiki/Journalism",
+    "https://en.wikipedia.org/wiki/Anthropology",
+    "https://en.wikipedia.org/wiki/Archaeology"
 ]
 
 import json
