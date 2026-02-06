@@ -201,7 +201,9 @@ fixed_urls = [
     "https://en.wikipedia.org/wiki/Television",
     "https://en.wikipedia.org/wiki/Journalism",
     "https://en.wikipedia.org/wiki/Anthropology",
-    "https://en.wikipedia.org/wiki/Archaeology"
+    "https://en.wikipedia.org/wiki/Archaeology",
+    "https://en.wikipedia.org/wiki/Sociology",
+    "https://en.wikipedia.org/wiki/Psychiatry"
 ]
 
 import json
@@ -209,7 +211,7 @@ import sys
 import os
 
 # Add parent directory to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import config
 
 print("Generating fixed URL file...")
