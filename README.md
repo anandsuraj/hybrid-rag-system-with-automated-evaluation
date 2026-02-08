@@ -118,6 +118,27 @@ To ensure a robust and reproducible system, we made the following design choices
 
 ---
 
+## System Visuals & UI Showcase
+
+### Architecture
+![System Dataflow](reports/screenshots/system_dataflow.png)
+
+### User Interface
+> **Main Dashboard**: Interactive RAG interface.
+![Main UI](reports/screenshots/main_ui_localhost.png)
+
+> **Search Results**: Detailed view of retrieved contexts and answers.
+![Search Result](reports/screenshots/fullscreen_search_result.png)
+
+### Execution Preview
+> **Pipeline Initialization**: Automated setup and data loading.
+![Pipeline Start](reports/screenshots/start_pipeline.png)
+
+> **Evaluation Metrics**: Real-time terminal output showing system performance.
+![Evaluation Output](reports/screenshots/evaluation_terminal.png)
+
+---
+
 ## Project Structure
 
 ```
