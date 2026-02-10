@@ -139,6 +139,23 @@ To ensure a robust and reproducible system, we made the following design choices
 
 ---
 
+## Real-World Applications
+
+This Hybrid RAG system, with its robust retrieval and automated evaluation, can be adapted for various high-stakes domains where accuracy and context are paramount:
+
+1.  **Legal Case Research**: Lawyers can find specific precedents (Sparse Retrieval for case numbers/statutes) while discovering conceptually similar arguments (Dense Retrieval) from vast legal repositories.
+2.  **Medical Diagnosis Support**: Doctors can search for patient symptoms described in natural language (Dense) while ensuring specific drug names or conditions are present (Sparse).
+3.  **Technical Support Automation**: Support bots can handle queries with specific error codes (Sparse) or vague problem descriptions like "system crash on startup" (Dense).
+4.  **Financial Market Intelligence**: Analysts can track market sentiment (Dense) while searching for specific ticker symbols or regulation clauses (Sparse).
+5.  **E-commerce Product Discovery**: Customers can find products by exact model numbers (Sparse) or descriptive queries like "breathable running shoes for flat feet" (Dense).
+6.  **Academic Literature Review**: Researchers can find papers by specific titles (Sparse) or explore broad research topics (Dense) to ensure comprehensive coverage.
+7.  **Patent Prior Art Search**: Inventors can check for existing patents using specific terminology (Sparse) or conceptual similarity (Dense) to avoid infringement.
+8.  **Regulatory Compliance Auditing**: Auditors can verify adherence to specific ISO clauses (Sparse) while assessing broad safety standards (Dense).
+9.  **Educational Tutoring Systems**: Students can ask about specific definitions (Sparse) or request conceptual explanations (Dense) for personalized learning.
+10. **News & Media Monitoring**: PR firms can track mentions of specific brand names (Sparse) or broader narrative themes (Dense) across global media.
+
+---
+
 ## Project Structure
 
 ```

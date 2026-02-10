@@ -1,0 +1,192 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+    color: #24292e;
+    /* Explicitly set text color to dark gray/black */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* Download Button Styles */
+.markdown-viewer-download-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #24292e;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+.markdown-viewer-download-btn:hover {
+    background-color: #0366d6;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.markdown-viewer-download-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+@media print {
+    .markdown-viewer-download-btn {
+        display: none !important;
+    }
+
+    .markdown-body {
+        padding: 20px !important;
+        max-width: 100%;
+        margin: 0 !important;
+    }
+
+    body {
+        margin: 0;
+        background-color: #ffffff;
+    }
+}
+
+@page {
+    margin: 0;
+    size: auto;
+}
+
+.markdown-body {
+    box-sizing: border-box;
+    min-width: 200px;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 45px;
+    background-color: #ffffff;
+    color: #24292e;
+}
+
+@media (max-width: 767px) {
+    .markdown-body {
+        padding: 15px;
+    }
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: #24292e;
+    /* Explicit header color */
+}
+
+.markdown-body h1 {
+    font-size: 2em;
+    border-bottom: 1px solid #eaecef;
+    padding-bottom: 0.3em;
+}
+
+.markdown-body h2 {
+    font-size: 1.5em;
+    border-bottom: 1px solid #eaecef;
+    padding-bottom: 0.3em;
+}
+
+.markdown-body p {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.markdown-body a {
+    color: #0366d6;
+    text-decoration: none;
+}
+
+.markdown-body a:hover {
+    text-decoration: underline;
+}
+
+.markdown-body code {
+    background-color: rgba(27, 31, 35, 0.05);
+    /* Light gray background for inline code */
+    border-radius: 3px;
+    padding: 0.2em 0.4em;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 85%;
+    color: #24292e;
+}
+
+.markdown-body pre {
+    background-color: #f6f8fa;
+    border-radius: 3px;
+    padding: 16px;
+    overflow: auto;
+    font-size: 85%;
+    line-height: 1.45;
+}
+
+.markdown-body pre code {
+    background-color: transparent;
+    padding: 0;
+    color: #24292e;
+    word-break: normal;
+}
+
+.markdown-body blockquote {
+    color: #6a737d;
+    border-left: 0.25em solid #dfe2e5;
+    padding: 0 1em;
+    margin: 0 0 16px 0;
+}
+
+.markdown-body table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 16px;
+    display: block;
+    overflow: auto;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+    padding: 6px 13px;
+    border: 1px solid #dfe2e5;
+}
+
+.markdown-body table tr {
+    background-color: #fff;
+    border-top: 1px solid #c6cbd1;
+}
+
+.markdown-body table tr:nth-child(2n) {
+    background-color: #f6f8fa;
+}
+
+.markdown-body img {
+    max-width: 100%;
+    box-sizing: content-box;
+    background-color: #fff;
+}
+
+.markdown-body hr {
+    height: 0.25em;
+    padding: 0;
+    margin: 24px 0;
+    background-color: #e1e4e8;
+    border: 0;
+}
