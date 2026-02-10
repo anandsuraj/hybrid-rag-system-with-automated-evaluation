@@ -28,9 +28,9 @@ build/
 npm-debug.log*
 
 # Data files
-data/*.pkl
-data/*.bin
-data/*.json
+# data/*.pkl
+# data/*.bin
+# data/*.json
 
 # Hugging Face artefacts
 HF_TOKEN*.png

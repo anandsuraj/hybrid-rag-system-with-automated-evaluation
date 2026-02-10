@@ -2,16 +2,6 @@
 
 A Retrieval-Augmented Generation (RAG) system that combines dense vector retrieval, sparse keyword retrieval (BM25), and Reciprocal Rank Fusion (RRF) to answer questions from 500 Wikipedia articles. The system includes an automated evaluation framework with 100 generated questions.
 
-## Group 8
-
-| Name | Email |
-|------|-------|
-| SELVA PANDIAN S | 2023AC05005@wilp.bits-pilani.ac.in |
-| Shikhar Nigam | 2024AA05691@wilp.bits-pilani.ac.in |
-| Suraj Anand | 2024AA05731@wilp.bits-pilani.ac.in |
-| NEERUMALLA KAVITHA | 2024AA05879@wilp.bits-pilani.ac.in |
-| Karan Sharma | 2024AB05145@wilp.bits-pilani.ac.in |
-
 ---
 
 ## Project Overview
