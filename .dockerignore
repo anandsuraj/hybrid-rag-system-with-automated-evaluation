@@ -10,7 +10,6 @@ __pycache__/
 dist/
 build/
 .DS_Store
-.git/
 .gitignore
 *.md
 !README.md
