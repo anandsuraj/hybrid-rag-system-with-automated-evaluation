@@ -6,7 +6,7 @@ A Retrieval-Augmented Generation (RAG) system that combines dense vector retriev
 
 ## Project Overview
 
-This project implements a complete Hybrid RAG pipeline and an automated evaluation framework. It follows the assignment structure strictly:
+This project implements a complete Hybrid RAG pipeline and an automated evaluation framework. The system is structured as follows:
 
 - **Part 1**: Implementation of the Hybrid RAG system (Dense + Sparse + RRF).
 - **Part 2**: Automated Evaluation (Question Generation, Metrics, Innovation).

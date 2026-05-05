@@ -35,7 +35,7 @@ VECTOR_INDEX_FILE = os.path.join(DATA_DIR, 'faiss_index.bin')
 VECTOR_METADATA_FILE = os.path.join(DATA_DIR, 'faiss_index_metadata.pkl')
 BM25_INDEX_FILE = os.path.join(DATA_DIR, 'bm25_index.pkl')
 
-# Chunking settings (from assignment requirements)
+# Chunking settings
 MIN_CHUNK_TOKENS = 200
 MAX_CHUNK_TOKENS = 400
 CHUNK_OVERLAP_TOKENS = 50
@@ -50,7 +50,7 @@ TEMPERATURE = 0.1
 # Retrieval settings
 DENSE_TOP_K = 10
 SPARSE_TOP_K = 10
-RRF_K = 60  # From assignment formula: RRF_score(d) = sum(1/(k + rank_i(d)))
+RRF_K = 60  # RRF formula: RRF_score(d) = sum(1/(k + rank_i(d)))
 FINAL_TOP_N = 3
 
 # Evaluation settings

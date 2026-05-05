@@ -29,7 +29,7 @@ class EvaluationMetrics:
     ) -> float:
         """
         Calculate Mean Reciprocal Rank at URL level (not chunk level).
-        This is the MANDATORY metric as per assignment.
+        This is the primary retrieval quality metric.
         
         Formula: MRR = 1/rank where rank is the position of the first correct URL
         

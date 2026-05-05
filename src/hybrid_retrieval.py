@@ -1,5 +1,5 @@
 # Hybrid retrieval combining dense and sparse methods with RRF
-# Reciprocal Rank Fusion as per assignment formula
+# Reciprocal Rank Fusion for combining dense and sparse results
 
 import os
 import sys
@@ -46,12 +46,12 @@ class HybridRetriever:
     ) -> List[Tuple[Dict, float]]:
         """
         Combine results using Reciprocal Rank Fusion.
-        Formula: RRF_score(d) = Σ 1/(k + rank_i(d)) where k=60 (as per assignment)
+        Formula: RRF_score(d) = Σ 1/(k + rank_i(d)) where k=60 (standard default)
         
         Args:
             dense_results: Results from dense retrieval
             sparse_results: Results from sparse retrieval
-            k: RRF constant (default 60 as per assignment)
+            k: RRF constant (default 60)
             
         Returns:
             List of (chunk_dict, rrf_score) tuples sorted by RRF score
